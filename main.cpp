@@ -18,7 +18,7 @@ int main(int argc, char* argv[]){
     std::ifstream in(filename);
     std::string line;
 
-    Bot negamax_bot = Bot();
+    C4::Bot negamax_bot = C4::Bot();
 
     double total = 0.0;
 

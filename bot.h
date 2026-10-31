@@ -4,16 +4,16 @@
 #include "game.h"
 #include "table.h"
 #include <cstdint>
-
-class Bot{
-public:
-    int play(std::string game_code);
-private:
-    int negamax(const Game &game, int alpha, int beta);
-    int iterative_deepening(const Game &game);
-    TranspositionTable table;
-};
-
+namespace C4{
+    class Bot{
+    public:
+        int play(std::string game_code);
+    private:
+        int negamax(const Game &game, int alpha, int beta);
+        int iterative_deepening(const Game &game);
+        TranspositionTable table;
+    };
+}
 
 
 
