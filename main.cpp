@@ -13,13 +13,13 @@ using namespace C4;
 int main(int argc, char* argv[]){
     if(argc != 2){
         std::cerr << "Usage: " << argv[0] << " <test_file>" << "\n";
-        return 1;
+        return 2;
     }
 
     std::ifstream in(argv[1]);
     if(!in){
         std::cerr << "Test file does not exist";
-        return 1;
+        return 2;
     }
 
     Bot bot;
