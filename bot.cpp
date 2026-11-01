@@ -45,18 +45,13 @@ int Bot::negamax(const Game &game, int alpha, int beta){
     }
 
     beta = std::min(beta, (WIDTH * HEIGHT - game.get_moves_count() - 1) / 2);
-
     if(alpha >= beta)return beta;
 
     std::uint64_t key = game.get_game_key();
-
     std::uint64_t mirror_key = mirror(key);
-
     bool flipped = (mirror_key < key);
 
-
     auto [score, first_move] = table.get(std::min(mirror_key, key));
-
     if(flipped)first_move = 6 - first_move;
     
     if(score){
@@ -73,15 +68,12 @@ int Bot::negamax(const Game &game, int alpha, int beta){
 
 
     BitBoard playable_mask = moves_to_play(game.get_current_player(), game.get_board());
-    
     if(playable_mask == 0){
         return -(WIDTH * HEIGHT - game.get_moves_count()) / 2;
     }
 
     Move_Data current_move_order[7];
-
     int no_moves = generate_move_order(game, playable_mask, current_move_order, first_move);
-    
     int best_col = current_move_order[0].col;
 
     for(int i = 0; i < no_moves; i++){
@@ -92,7 +84,6 @@ int Bot::negamax(const Game &game, int alpha, int beta){
         new_game.play_move(col);
 
         std::uint64_t new_game_key = new_game.get_game_key();
-
         table.prefetch(std::min(new_game_key, mirror_key));
         
         int new_score = -negamax(new_game, -beta, -alpha);

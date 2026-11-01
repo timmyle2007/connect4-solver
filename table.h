@@ -19,18 +19,18 @@ namespace C4{
             std::memset(keys.get(), 0, TABLE_SIZE * sizeof(KeyType));
             std::memset(values.get(), 0, TABLE_SIZE * sizeof(ValueType));
         }
-        void update(std::uint64_t key, ValueType value, int col){
-            int index = key % TABLE_SIZE;
-            keys[index] = (static_cast<KeyType>(key) & KEY_MASK) + (1ULL << 29) * col;
-            values[index] = value;
+        void update(std::uint64_t key, int value, int col){
+            std::uint64_t index = key % TABLE_SIZE;
+            keys[index] = (static_cast<KeyType>(key) & KEY_MASK) + static_cast<KeyType>((1ULL << 29) * col);
+            values[index] = static_cast<ValueType>(value);
         }
         std::pair<ValueType, int> get(std::uint64_t key)const{
-            int index = key % TABLE_SIZE;
+            std::uint64_t index = key % TABLE_SIZE;
             if(((keys[index] & KEY_MASK) == (key & KEY_MASK)) && values[index] > 0)return std::make_pair(values[index], keys[index] >> 29);
             return std::make_pair(0, 0);
         }
         void prefetch(std::uint64_t key)const{
-            int index = key % TABLE_SIZE;
+            std::uint64_t index = key % TABLE_SIZE;
             __builtin_prefetch(&keys[index]);
             __builtin_prefetch(&values[index]);
         }
