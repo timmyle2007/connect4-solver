@@ -11,9 +11,16 @@ namespace C4{
         void reset(){ 
             table.reset();
         }   
+        void increment_nodes_count(){
+            NODES_COUNT++;
+        }
+        long long get_nodes_count()const{
+            return NODES_COUNT;
+        }
     private:
         int negamax(const Game &game, int alpha, int beta);
         int iterative_deepening(const Game &game);
+        long long NODES_COUNT = 0;
         TranspositionTable table;
     };
 }

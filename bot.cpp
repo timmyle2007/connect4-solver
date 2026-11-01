@@ -37,7 +37,7 @@ int generate_move_order(const Game &game, BitBoard playable_mask, Move_Data curr
 }
 
 int Bot::negamax(const Game &game, int alpha, int beta){
-
+    increment_nodes_count();
     if(game.get_moves_count() == WIDTH * HEIGHT)return 0;
 
     if(can_win_next_move(game.get_current_player(), game.get_board())){

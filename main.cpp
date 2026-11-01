@@ -8,59 +8,57 @@
 #include <cassert>
 #include "bot.h"
 
+using namespace C4;
+
 int main(int argc, char* argv[]){
-    std::string filename;
-    if(argc == 1){
-        filename = "TEST_L2_R1";
-    }else{
-        filename = argv[1];
+    if(argc != 2){
+        std::cerr << "Usage: " << argv[0] << " <test_file>" << "\n";
+        return 1;
     }
-    std::ifstream in(filename);
+
+    std::ifstream in(argv[1]);
+    if(!in){
+        std::cerr << "Test file does not exist";
+        return 1;
+    }
+
+    Bot bot;
+    double total_ms = 0;
+    int total_positions = 0;
+
     std::string line;
-
-    C4::Bot negamax_bot = C4::Bot();
-
-    double total = 0.0;
-
-    int test_count = 0;
-
-    while(std::getline(in, line)){
+    while(getline(in, line)){
         std::stringstream ss(line);
 
-        std::string token;
-
         std::string game_code;
-        int answer;
+        int expected_answer;
+        if(!(ss >> game_code >> expected_answer)){
+            std::cerr << "Invalid format in test files";
+            return 2;
+        }
 
-        std::getline(ss, token, ' ');
-        game_code = token;
-
-        std::getline(ss, token);
-        answer = std::stoi(token);
+        bot.reset();
 
         auto t0 = std::chrono::steady_clock::now();
-        
-
-
-        int guess = negamax_bot.play(game_code);
-
-
+        int bot_guess = bot.play(game_code);
         auto t1 = std::chrono::steady_clock::now();
 
-        double ms = std::chrono::duration<double, std::milli>(t1 - t0).count();
-
-        total += ms; test_count++;
+        total_ms += std::chrono::duration<double, std::milli>(t1 - t0).count();
+        total_positions++;
         
-        if(guess != answer){
-            std::cout << "WRONG ANSWER" << "\n";
-            std::cout << "Game Code: " << game_code << "\n";
-            std::cout << "Expected: " << answer << "\n";
-            std::cout << "Got: " << guess << "\n";
+        if(expected_answer != bot_guess){
+            std::cerr << "WRONG ANSWER" << "\n";
+            std::cerr << "Game Code: " << game_code << "\n";
+            std::cerr << "Expected: " << expected_answer << "\n";
+            std::cerr << "Got: " << bot_guess << "\n";
             return 1;
         }
     }
 
     std::cout << "SUCCESS" << "\n";
-    std::cout << "Average time: " << total / test_count << "\n";
+    std::cout << "Mean ms per position: " << static_cast<double>(total_ms) / total_positions << "\n";
+    std::cout << "Mean nodes explored per position: " << static_cast<double>(bot.get_nodes_count()) / total_positions << "\n";
+    std::cout << "Mean ns per node: " << static_cast<double>(total_ms * 1000000) / static_cast<double>(bot.get_nodes_count()) << "\n";
+
     return 0;
 }

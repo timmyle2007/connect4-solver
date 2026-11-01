@@ -1,3 +1,5 @@
+//Unit test for Transposition Table
+
 #include "doctest.h"
 #include "table.h"
 

@@ -1,5 +1,4 @@
-// Oracle tests: the solver against Pascal Pons' reference scores.
-// Each line of a test file is "<moves> <score>", score from the side to move.
+// Oracle tests against Pascal Pons' test files
 #include "doctest.h"
 #include "bot.h"
 
