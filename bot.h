@@ -21,7 +21,12 @@ namespace C4{
         int negamax(const Game &game, int alpha, int beta);
         int iterative_deepening(const Game &game);
         long long NODES_COUNT = 0;
+
+        #ifndef BUCKET_TABLE
         TranspositionTable table;
+        #else
+        BucketTranspositionTable table;
+        #endif
     };
 }
 

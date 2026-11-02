@@ -131,5 +131,19 @@ namespace C4{
         return result;
     }
 
+    constexpr bool contains_four(BitBoard board){
+        if((board) & (board << 1) & (board << 2) & (board << 3))return true;
+        if((board) & (board << (HEIGHT + 1)) & (board << (2 * (HEIGHT + 1))) & (board << (3 * (HEIGHT + 1))))return true;
+        if((board) & (board << (HEIGHT)) & (board << (2 * (HEIGHT))) & (board << (3 * (HEIGHT))))return true;
+        if((board) & (board << (HEIGHT + 2)) & (board << (2 * (HEIGHT + 2))) & (board << (3 * (HEIGHT + 2))))return true;
+        return false;
+    }
+
+    constexpr bool can_still_win(BitBoard board, BitBoard player){
+        BitBoard player_all = (BOARD_MASK ^ (board ^ player)) | player;
+        return contains_four(player_all);
+    }   
 }
+
+
 #endif

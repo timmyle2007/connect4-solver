@@ -8,6 +8,31 @@ constexpr int ORIG_MOVE_ORDER[7] = {3, 2, 4, 1, 5, 0, 6};
 constexpr int MIN_SCORE = -18;
 constexpr int MAX_SCORE = 18;
 
+#ifndef NO_SYMMETRY
+constexpr bool USE_SYMMETRY = true;
+#else
+constexpr bool USE_SYMMETRY = false;
+#endif
+
+#ifndef NO_HASH_MOVE
+constexpr bool USE_HASH_MOVE = true;
+#else
+constexpr bool USE_HASH_MOVE = false;
+#endif 
+
+#ifndef NO_PREFETCH
+constexpr bool USE_PREFETCH = true;
+#else
+constexpr bool USE_PREFETCH = false;
+#endif 
+
+#ifndef NO_DRAW_CHECK
+constexpr bool USE_DRAW_CHECK = true;
+#else
+constexpr bool USE_DRAW_CHECK = false;
+#endif
+
+
 struct Move_Data{
     int col, score;
 };
@@ -39,16 +64,42 @@ int generate_move_order(const Game &game, BitBoard playable_mask, Move_Data curr
 int Bot::negamax(const Game &game, int alpha, int beta){
     increment_nodes_count();
     if(game.get_moves_count() == WIDTH * HEIGHT)return 0;
-
     if(can_win_next_move(game.get_current_player(), game.get_board())){
         return (WIDTH * HEIGHT - game.get_moves_count() + 1) / 2;
+    }
+
+    BitBoard board = game.get_board();
+    BitBoard current_player = game.get_current_player();
+
+    if(USE_DRAW_CHECK){
+
+        bool can_player_win = can_still_win(board, current_player);
+        bool can_opp_win = can_still_win(board, board ^ current_player);
+
+        if(!can_player_win){
+            beta = std::min(beta, 0);
+            if(alpha >= beta)return beta;
+        }
+
+        if(!can_opp_win){
+            alpha = std::max(alpha, 0);
+            if(alpha >= beta)return alpha;
+        }
+
     }
 
     beta = std::min(beta, (WIDTH * HEIGHT - game.get_moves_count() - 1) / 2);
     if(alpha >= beta)return beta;
 
     std::uint64_t key = game.get_game_key();
-    std::uint64_t mirror_key = mirror(key);
+    std::uint64_t mirror_key;
+
+    if(USE_SYMMETRY){
+        mirror_key = mirror(key);
+    }else{
+        mirror_key = key;
+    }
+
     bool flipped = (mirror_key < key);
 
     auto [score, first_move] = table.get(std::min(mirror_key, key));
@@ -66,6 +117,7 @@ int Bot::negamax(const Game &game, int alpha, int beta){
         first_move = -1;
     }
 
+    if(!USE_HASH_MOVE)first_move = -1;
 
     BitBoard playable_mask = moves_to_play(game.get_current_player(), game.get_board());
     if(playable_mask == 0){
@@ -76,6 +128,7 @@ int Bot::negamax(const Game &game, int alpha, int beta){
     int no_moves = generate_move_order(game, playable_mask, current_move_order, first_move);
     int best_col = current_move_order[0].col;
 
+
     for(int i = 0; i < no_moves; i++){
 
         int col = current_move_order[i].col;
@@ -84,8 +137,18 @@ int Bot::negamax(const Game &game, int alpha, int beta){
         new_game.play_move(col);
 
         std::uint64_t new_game_key = new_game.get_game_key();
-        table.prefetch(std::min(new_game_key, mirror_key));
-        
+
+        if(USE_PREFETCH){
+
+            if(USE_SYMMETRY){
+                table.prefetch(std::min(new_game_key, mirror(new_game_key)));
+            }else{
+                table.prefetch(new_game_key);
+            }
+
+        }
+
+
         int new_score = -negamax(new_game, -beta, -alpha);
 
         if(new_score >= beta){
@@ -115,7 +178,8 @@ int Bot::negamax(const Game &game, int alpha, int beta){
 
 
 int Bot::iterative_deepening(const Game &game){
-    int min =  -(WIDTH * HEIGHT - game.get_moves_count() + 1) / 2, max = (WIDTH * HEIGHT - game.get_moves_count() + 1) / 2;
+    int min =  std::max(MIN_SCORE, -(WIDTH * HEIGHT - game.get_moves_count()) / 2);
+    int max = std::min(MAX_SCORE, (WIDTH * HEIGHT - game.get_moves_count() + 1) / 2);
     while(min < max){
         int mid = (min + max) >> 1;
 
