@@ -18,7 +18,7 @@ $BUILD bot_6 -DBUCKET_TABLE -DBENCHMARK
 
 printf "%-6s %-14s %12s %14s %12s\n" bot "test set" mean_ms nodes ns_per_node
 
-for test_file in Test_L3_R1 Test_L2_R1 Test_L1_R1 Test_L2_R2; do
+for test_file in tests/data/Test_L3_R1 tests/data/Test_L2_R1 tests/data/Test_L1_R1 tests/data/Test_L2_R2; do
         for bot in bot_0 bot_1 bot_2 bot_3 bot_4 bot_5 bot_6; do
                 for iter in 1 2 3 4 5; do
                         ./$bot $test_file | tail -3
@@ -33,9 +33,9 @@ done
 #Final set
 
 #To save time, only take the first 20 row
-head -n 20 Test_L1_R3 > Test_L1_R3_20
+head -n 20 tests/data/Test_L1_R3 > tests/data/Test_L1_R3_20
 
-for test_file in Test_L1_R3_20; do
+for test_file in tests/data/Test_L1_R3_20; do
         for bot in bot_0 bot_1 bot_2 bot_3 bot_4 bot_5 bot_6; do
                 for iter in 1 2 3; do
                         ./$bot $test_file | tail -3

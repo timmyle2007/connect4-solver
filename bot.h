@@ -19,7 +19,7 @@ namespace C4{
         }
     private:
         int negamax(const Game &game, int alpha, int beta);
-        int iterative_deepening(const Game &game);
+        int null_window_search(const Game &game);
         long long NODES_COUNT = 0;
 
         #ifndef BUCKET_TABLE

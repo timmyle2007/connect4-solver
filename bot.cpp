@@ -177,7 +177,7 @@ int Bot::negamax(const Game &game, int alpha, int beta){
 }
 
 
-int Bot::iterative_deepening(const Game &game){
+int Bot::null_window_search(const Game &game){
     int min =  std::max(MIN_SCORE, -(WIDTH * HEIGHT - game.get_moves_count()) / 2);
     int max = std::min(MAX_SCORE, (WIDTH * HEIGHT - game.get_moves_count() + 1) / 2);
     while(min < max){
@@ -198,11 +198,8 @@ int Bot::iterative_deepening(const Game &game){
 int Bot::play(std::string game_code){
 
     Game game(game_code);
-    if(static_cast<int>(game_code.size()) % 2 == 0){
-        return Bot::iterative_deepening(game);
-    }else{
-        return Bot::iterative_deepening(game);
-    }
+    return Bot::null_window_search(game);
+    
 }
 
 

@@ -37,12 +37,12 @@ static void check_file(const std::string& path) {
 }
 
 //Fast test cases
-TEST_CASE("Test_L3_R1 (end-game, easy)")    { check_file("Test_L3_R1"); }
-TEST_CASE("Test_L2_R1 (middle-game, easy)") { check_file("Test_L2_R1"); }
+TEST_CASE("Test_L3_R1 (end-game, easy)")    { check_file("tests/data/Test_L3_R1"); }
+TEST_CASE("Test_L2_R1 (middle-game, easy)") { check_file("tests/data/Test_L2_R1"); }
 
 // Slow test cases
-TEST_CASE("Test_L1_R1 (begin-game, easy)" * doctest::skip()) { check_file("Test_L1_R1"); }
-TEST_CASE("Test_L2_R2 (middle-game, medium)" * doctest::skip()) { check_file("Test_L2_R2"); }
+TEST_CASE("Test_L1_R1 (begin-game, easy)" * doctest::skip()) { check_file("tests/data/Test_L1_R1"); }
+TEST_CASE("Test_L2_R2 (middle-game, medium)" * doctest::skip()) { check_file("tests/data/Test_L2_R2"); }
 
 TEST_CASE("Invalid game codes are rejected") {
     Bot bot;

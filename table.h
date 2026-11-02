@@ -75,7 +75,7 @@ namespace C4{
             std::size_t free_index = SLOTS_PER_BUCKET;
 
             for(std::size_t i = 0; i < SLOTS_PER_BUCKET; i++){
-                if(bucket.values[i] > 0 && bucket.keys[i] == static_cast<KeyType>(key)){
+                if(bucket.values[i] > 0 && (bucket.keys[i] & KEY_MASK) == (key & KEY_MASK)){
                     update_bucket(bucket, i, key, value, col);
                     return;
                 }
