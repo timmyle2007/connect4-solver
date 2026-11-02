@@ -27,8 +27,6 @@ namespace C4{
                 }
 
                 play_move(col);
-                current_player_id = 3 - current_player_id;
-
             }
         }   
 
