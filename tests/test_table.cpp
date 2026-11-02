@@ -49,7 +49,7 @@ TEST_CASE("Transposition table: A new key can override an old key at the same sl
 TEST_CASE("Bucket transposition table: Buckets are implemented correctly"){
     BucketTranspositionTable t;
     const std::uint64_t k1 = (1LL << 29) + 2007;
-    const std::uint64_t k2 = (1LL << 29) + 2007 + t.TABLE_SIZE;
+    const std::uint64_t k2 = k1 + t.TABLE_SIZE;
     
     t.update(k1, 2, 6);
     t.update(k2, 1, 2);
@@ -68,4 +68,21 @@ TEST_CASE("Bucket transposition table: Buckets are implemented correctly"){
     CHECK(v3 == 1);
     CHECK(col3 == 5);
 
+    for(int i = 2; i <= 5; i++){
+        t.update(k1 + t.TABLE_SIZE * i, i, 1);
+    }
+
+    for(int i = 0; i <= 5; i++){
+        auto [v, col] = t.get(k1 + t.TABLE_SIZE * i);
+        if(i == 0){
+            CHECK(v == 1);
+            CHECK(col == 5);
+        }else if(i == 1){
+            CHECK(v == 1);
+            CHECK(col == 2);
+        }else{
+            CHECK(v == i);
+            CHECK(col == 1);
+        }
+    }
 }
