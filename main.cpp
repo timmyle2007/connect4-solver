@@ -54,11 +54,18 @@ int main(int argc, char* argv[]){
             return 1;
         }
     }
+    std::cout << std::fixed << std::setprecision(5);
+    double mean_ms = static_cast<double>(total_ms) / total_positions;
+    double mean_nodes_per_pos = static_cast<double>(bot.get_nodes_count()) / total_positions;
+    double mean_ns_per_node = static_cast<double>(total_ms * 1000000) / static_cast<double>(bot.get_nodes_count());
 
-    std::cout << "SUCCESS" << "\n";
-    std::cout << "Mean ms per position: " << static_cast<double>(total_ms) / total_positions << "\n";
-    std::cout << "Mean nodes explored per position: " << static_cast<double>(bot.get_nodes_count()) / total_positions << "\n";
-    std::cout << "Mean ns per node: " << static_cast<double>(total_ms * 1000000) / static_cast<double>(bot.get_nodes_count()) << "\n";
-
+    #ifndef BENCHMARK
+        std::cout << "SUCCESS" << "\n";
+        std::cout << "Mean ms per position: " << mean_ms << "\n";
+        std::cout << "Mean nodes explored per position: " << mean_nodes_per_pos << "\n";
+        std::cout << "Mean ns per node: " << mean_ns_per_node << "\n";
+    #else   
+        std::cout << mean_ms << " " << mean_nodes_per_pos << " " << mean_ns_per_node << "\n";
+    #endif
     return 0;
 }

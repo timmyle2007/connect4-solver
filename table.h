@@ -47,7 +47,7 @@ namespace C4{
     public:
         using KeyType = std::uint32_t;
         using ValueType = std::int8_t;
-        static constexpr std::size_t TABLE_SIZE = 8388593;
+        static constexpr std::size_t TABLE_SIZE = 1048583;
         static constexpr std::uint32_t KEY_MASK = (1ULL << 29) - 1;
         static constexpr int SLOTS_PER_BUCKET = 6;
         struct alignas(64) Bucket{
@@ -89,7 +89,7 @@ namespace C4{
                 return;
             }
 
-            update_bucket(bucket, rng() % SLOTS_PER_BUCKET , key, value, col);
+            update_bucket(bucket, key % SLOTS_PER_BUCKET , key, value, col);
 
         }
 
@@ -97,7 +97,7 @@ namespace C4{
         std::pair<ValueType, int>get(std::uint64_t key){
             std::uint64_t index = key % TABLE_SIZE;
             Bucket &bucket = table[index];
-            for(std::size_t i = 0; i < 12; i++){
+            for(std::size_t i = 0; i < SLOTS_PER_BUCKET; i++){
                 if(((bucket.keys[i] & KEY_MASK) == (key & KEY_MASK)) && bucket.values[i] > 0)return std::make_pair(bucket.values[i], bucket.keys[i] >> 29);
             }
             return std::make_pair(0, 0);
@@ -108,7 +108,6 @@ namespace C4{
             __builtin_prefetch(&table[index]);
         }
     private:
-        std::mt19937 rng{42};
         std::vector<Bucket>table;
     };
 
